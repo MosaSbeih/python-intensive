@@ -49,8 +49,7 @@ class ColorLog:
 
 
 if __name__ == "__main__":
-
-    x = colorlog.getLogger()
+      
     color1 = ColorLog()
     color1.debug("debug")
     color1.info("info")
