@@ -2,7 +2,6 @@ from fileinput import filename
 from stat import filemode
 import os
 import sys
-from tkinter import N
 import colorlog
 
 
