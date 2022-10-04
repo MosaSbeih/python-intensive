@@ -1,7 +1,4 @@
-from ast import arg
-
-
-number_list = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+NUMBER_LIST = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
 
 
 # string: h42l -> [h, 42, l]
@@ -11,7 +8,7 @@ def slice_string_keep_numbers(string: str) -> list:
     saved_num = ""
 
     for char in string:
-        if char in number_list:
+        if char in NUMBER_LIST:
             saved_num += char
         else:
             if saved_num:
@@ -56,11 +53,4 @@ def print_table(*args: list) -> None:
         for list_index in range(len(args)):
             print(args[list_index][item_index], " | ", end="")
         print(f"\n{50 * '-'}")
-
-
-
-
-
-
-    
-
+        
