@@ -11,5 +11,5 @@ class Point:
     def default(cls):
         return Point(x=0, y=0)
 
-    def to_tuple(self):
+    def to_tuple(self) -> tuple:
         return self.x, self.y
