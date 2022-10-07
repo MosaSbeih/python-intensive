@@ -35,14 +35,16 @@ class ImageUpdater:
 
 
 if __name__ == "__main__":
+    text = "We are learning\nPython"
+    
     with ImageUpdater(IMAGE_DIR) as file_1:
-        file_1.draw(text="We are learning\nPython", background_color="black", text_color="white",
+        file_1.draw(text=text, background_color="black", text_color="white",
                     initial_point=Point(30, 10), final_point=Point(220, 160))
 
-        file_1.draw(text="We are learning\nPython", background_color="yellow", text_color="black",
+        file_1.draw(text=text, background_color="yellow", text_color="black",
                     initial_point=Point(320, 10), final_point=Point(510, 160))
 
-        file_1.draw(text="We are learning\nPython", background_color="#3e41f4", text_color="white",
+        file_1.draw(text=text, background_color="#3e41f4", text_color="white",
                     initial_point=Point(180, 200), final_point=Point(370, 350))
 
         file_1.save()
