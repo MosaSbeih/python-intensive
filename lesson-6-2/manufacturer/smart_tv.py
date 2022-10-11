@@ -1,7 +1,6 @@
 import logging
-from random import choice
 
-from manufacturer.device import IDevice, ConnectionState, CHOICE_TUPLE
+from manufacturer.device import IDevice, ConnectionState
 
 
 class SmartTV(IDevice):
@@ -11,12 +10,12 @@ class SmartTV(IDevice):
         self.__device_state = ConnectionState.Disconnected
 
     def connect(self) -> bool:
-        self.__device_state = choice(CHOICE_TUPLE)
+        self.__device_state = ConnectionState.random_item()
 
         return self.__device_state.value
 
     def disconnect(self) -> bool:
-        self.__device_state = choice(CHOICE_TUPLE)
+        self.__device_state = ConnectionState.random_item()
 
         return self.__device_state.value
 
@@ -37,12 +36,12 @@ class SmartTV2(IDevice):
         self.__device_state = ConnectionState.Disconnected
 
     def connect(self) -> bool:
-        self.__device_state = choice(CHOICE_TUPLE)
+        self.__device_state = ConnectionState.random_item()
 
         return self.__device_state.value
 
     def disconnect(self) -> bool:
-        self.__device_state = choice(CHOICE_TUPLE)
+        self.__device_state = ConnectionState.random_item()
 
         return self.__device_state.value
 

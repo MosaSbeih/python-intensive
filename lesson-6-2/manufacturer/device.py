@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
 from enum import Enum
+from random import choice
 
 
 class ConnectionState(Enum):
     Connected = True
     Disconnected = False
 
-
-CHOICE_TUPLE = (ConnectionState.Connected, ConnectionState.Disconnected)
+    @staticmethod
+    def random_item() -> "ConnectionState":
+        return choice(list(ConnectionState))
 
 
 class IDevice(ABC):

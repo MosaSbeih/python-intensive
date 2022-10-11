@@ -14,7 +14,7 @@ class SmartHouseMonitoringService:
 
     @staticmethod
     def check_state(devices: list[IDevice], serial_number: str) -> ConnectionState:
+        device = [d for d in devices if d.get_serial_number() == serial_number]
 
-        for device in devices:
-            if device.get_serial_number() == serial_number:
-                return device.get_device_state()
+        if device:
+            return device[0].get_device_state()

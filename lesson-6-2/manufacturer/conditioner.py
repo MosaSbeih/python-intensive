@@ -1,8 +1,7 @@
 import logging
 from enum import Enum
-from random import choice
 
-from manufacturer.device import IDevice, ConnectionState, CHOICE_TUPLE
+from manufacturer.device import IDevice, ConnectionState
 
 
 class ConditionerModes(Enum):
@@ -22,12 +21,12 @@ class Conditioner(IDevice):
         self.mode = ConditionerModes.Normal
 
     def connect(self) -> bool:
-        self.__device_state = choice(CHOICE_TUPLE)
+        self.__device_state = ConnectionState.random_item()
 
         return self.__device_state.value
 
     def disconnect(self) -> bool:
-        self.__device_state = choice(CHOICE_TUPLE)
+        self.__device_state = ConnectionState.random_item()
 
         return self.__device_state.value
 

@@ -26,34 +26,29 @@ console_handler.setLevel(level)
 console_handler.setFormatter(logging.Formatter(DEFAULT_LOG_FORMAT))
 logger.addHandler(console_handler)
 
-if __name__ == "__main__":
 
-    computer = Computer(str(uuid4()))
-    conditioner = Conditioner(str(uuid4()))
-    smart_tv = SmartTV(str(uuid4()))
-    smart_tv2 = SmartTV2(str(uuid4()))
-    smart_light = SmartLight(str(uuid4()))
-    smart_light2 = SmartLight2(str(uuid4()))
-
-    computer.connect()
-    conditioner.connect()
-    smart_tv.connect()
-    smart_tv2.connect()
-    smart_light.connect()
-    smart_light2.connect()
-
+def main() -> None:
     smart_house = SmartHouseService()
-    smart_house.register_devices(computer, conditioner, smart_light, smart_tv, smart_light2, smart_tv2)
 
-    serial_numbers_list = smart_house.monitoring_service.get_all_devices_serials(devices=smart_house.devices)
-    check_state = smart_house.monitoring_service.check_state(devices=smart_house.devices,
-                                                             serial_number=computer.get_serial_number())
+    smart_house.register_devices(
+        Computer(str(uuid4())),
+        SmartLight(str(uuid4())),
+        Conditioner(str(uuid4())),
+        SmartTV(str(uuid4())),
+        SmartTV2(str(uuid4())),
+        SmartLight2(str(uuid4())),
+    )
 
-    logging.info(f"serial numbers: {serial_numbers_list}")
-    logging.info(f"{computer.__class__.__name__} ({computer.get_serial_number()}) state: {check_state}")
+    logging.info(smart_house.monitoring_service.get_all_devices_serials(smart_house.devices))
+
+    time.sleep(5)
 
     smart_house.start()
 
     time.sleep(5)
 
     smart_house.stop()
+
+
+if __name__ == "__main__":
+    main()
