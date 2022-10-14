@@ -3,7 +3,7 @@ import locale
 from functools import wraps
 
 
-def short_form(func):
+def short_form(func) -> list[str]:
     @wraps(func)
     def wrapper():
         return list(calendar.day_abbr)
@@ -11,7 +11,7 @@ def short_form(func):
     return wrapper
 
 
-def translate(language: str = "English"):
+def translate(language: str = "English") -> list[str]:
     def inner_function(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
