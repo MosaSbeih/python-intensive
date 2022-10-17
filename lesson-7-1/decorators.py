@@ -3,7 +3,7 @@ import locale
 from functools import wraps
 
 
-def abbr_data():
+def abbr_data() -> dict:
     data_dict = {}
     weekday_data = list(calendar.day_name)
     abbr_weekday_date = list(calendar.day_abbr)
