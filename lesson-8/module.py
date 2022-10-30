@@ -2,15 +2,18 @@
 module.py contains functions that generate random products and calculate their average price
 """
 import random
+import itertools
 
 
+from functools import reduce
 from dataclasses import dataclass
 from enum import IntEnum
+from typing import Generator, Union
 
 
 class Vegetable(IntEnum):
     """
-    Vegetables!
+    The enumeration of available Vegetables
     """
     Tomato = 1
     Potato = 2
@@ -21,7 +24,7 @@ class Vegetable(IntEnum):
 
 class Drinks(IntEnum):
     """
-    Drinks!
+    The enumeration of available Vegetables Drinks
     """
     Soda = 1
     Water = 2
@@ -37,67 +40,56 @@ class Product:
     """
     A data class representing a product
 
-    ...
-
     Attributes:
     ----------
-    product_id : int
-        Product id for a specific category
-    product_type : Any
-        Vegetables, Drinks, etc...
+    product_id : int -> (Product id for a specific category)
+
+    product_type : Any -> (Vegetables, Drinks, etc...)
+
     product_price : int
         """
     product_id: int
-    product_type: Vegetable
+    product_type: Union[Vegetable, Drinks]
     product_price: float
 
+    def __lt__(self, other):
+        return self.product_type < other.product_type
 
-# returns [('Tomato', 1.12), ('Juice', 1.05), etc...]
-def product_avg_price(sequence: iter) -> list[tuple]:
+
+def product_avg_price(products: Generator) -> Generator[tuple, None, None]:
     """
     Function that calculates the average price of different products
 
-    ...
-
     Parameters:
     ----------
-    sequence: Product
-        A sequence of Products
+    products: Product -> (sequence of Products)
 
     Return:
     ------
-    list[tuple]
+    Generator[tuple] -> Generator[(product_type, avg), ('Tomato', 1.12), etc...]
     """
-    product_data = {}
-    for data in sequence:
-        key = data.product_type.__str__()
-        if key in product_data:
-            product_data[key] = (product_data[key][0] + data.product_price, product_data[key][1] + 1)
-        else:
-            product_data[key] = product_data.get(key, (data.product_price, 1))
 
-    for items in product_data.items():
-        product_data[items[0]] = round(items[1][0]/items[1][1], 2)
+    def avg(list_to_reduce):
+        return reduce(lambda a, b: a + b, list_to_reduce) / len(list_to_reduce)
 
-    return list(product_data.items())
+    groups = itertools.groupby(sorted(products), key=lambda product: product.product_type)
+    for key, sub_group in groups:
+        yield key, round(avg([product.product_price for product in sub_group]), 2)
 
 
-def generate_products(items_range: int):
+def generate_products(quantity: int) -> Generator[Product, None, None]:
     """
     Function that generates random products
 
-    ...
-
     Parameters:
     ----------
-    items_range: int
-        How many products do you want?
+    quantity: int
 
     Return:
     ------
-    generator
+    Generator[Product]
     """
-    for _ in range(items_range + 1):
+    for _ in range(quantity + 1):
         product_category = random.choice(PRODUCTS)
         product_type = random.choice(list(product_category.__members__.values()))
         product_price = random.uniform(PRICE_RANGE[0], PRICE_RANGE[1])
