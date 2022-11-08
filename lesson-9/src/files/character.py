@@ -77,6 +77,12 @@ class Character:
         >>> entity_2 = Character("Zombie", 100, 100, entity_logger)
         >>> entity_2.attack(entity_1)
 
+        >>> entity_1.hit_point
+        0
+        >>> entity_2.attack()
+        Traceback (most recent call last):
+            ...
+        TypeError: Character.attack() missing 1 required positional argument: 'enemy'
         >>> entity_2.attack(None)
         Traceback (most recent call last):
             ...
