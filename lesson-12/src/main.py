@@ -5,7 +5,8 @@ import requests
 
 
 from bs4 import BeautifulSoup
-from DataProcess import CreateData, Package, PackageName, PackageVersion, PackageDate, PackageDescription
+from package import Package, PackageName, PackageVersion, PackageDate, PackageDescription
+from DataProcess import CreateData, JSON, CSV, XML
 
 
 ABS_PATH = os.path.abspath("").replace("src", "")
@@ -14,7 +15,7 @@ WEBSITE_SEARCH = "https://pypi.org/search/?q="
 # logging
 LOG_FILE_NAME = os.path.join(ABS_PATH, "logs", "log.txt")
 DEFAULT_LOG_LEVEL = logging.INFO
-DEFAULT_LOG_FORMAT = "%(message)s"
+DEFAULT_LOG_FORMAT = "%(levelname)s | %(message)s"
 level = os.environ.get("LOGLEVEL", DEFAULT_LOG_LEVEL)
 # config
 logging.basicConfig(filename=LOG_FILE_NAME, level=level, filemode='a', format=DEFAULT_LOG_FORMAT)
@@ -25,49 +26,62 @@ console_handler.setLevel(level)
 console_handler.setFormatter(logging.Formatter(DEFAULT_LOG_FORMAT))
 logger.addHandler(console_handler)
 
-try:
-    os.mkdir(ABS_PATH + os.sep + "output")
-except FileExistsError:
-    pass
+
+def get_response(url):
+    response = None
+
+    try:
+        logger.info(f"Requesting data from {url}")
+        response = requests.get(url=url)
+        logger.info("Data received")
+    except requests.exceptions.ConnectionError:
+        logger.error("Connection Error. Data was not received")
+    finally:
+        return response
 
 
 def main() -> None:
     search = WEBSITE_SEARCH + input("Search for a package: ")
 
-    logger.info(f"Requesting data from {search}")
-    response = requests.get(url=search)
-    logger.info(f"Data received")
+    response = get_response(search)
+    if response is None:
+        logger.warning("Exiting...")
+        sys.exit(0)
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    for package_snippet in soup.select(".package-snippet")[0:9]:
-        logger.info("INFO | Parsing data for package <" + package_snippet.select(".package-snippet__name")[0].text + ">")
+    try:
+        os.mkdir(OUTPUT_PATH)
+    except FileExistsError:
+        pass
 
-        file_path = os.path.join(OUTPUT_PATH, package_snippet.select(".package-snippet__name")[0].text)
+    for package_snippet in soup.select(".package-snippet")[0:9]:
+        select = package_snippet.select
+
+        package_name = select(".package-snippet__name")[0].text
+        package_version = select(".package-snippet__version")[0].text
+        package_date = select(".package-snippet__created")[0].text.replace("\n", "").removeprefix("  ")
+        package_description = select(".package-snippet__description")[0].text
+
+        file_path = os.path.join(OUTPUT_PATH, package_name)
+        output_file_path = os.path.join(file_path, package_name)
 
         try:
             os.mkdir(file_path)
         except FileExistsError:
-            logger.warning("WARNING | FILE ALREADY EXISTS")
+            logger.warning("FILE ALREADY EXISTS")
             continue
 
-        data_list = (
-            package_snippet.select(".package-snippet__name")[0].text,
-            package_snippet.select(".package-snippet__version")[0].text,
-            package_snippet.select(".package-snippet__created")[0].text.replace("\n", "").removeprefix("  "),
-            package_snippet.select(".package-snippet__description")[0].text
-        )
+        logger.info("Parsing data for package <" + package_name + ">")
 
-        data_file_path = file_path + os.sep + data_list[0]
+        package_info = Package(PackageName=PackageName(package_name),
+                               PackageVersion=PackageVersion(package_version),
+                               PackageDate=PackageDate(package_date),
+                               PackageDescription=PackageDescription(package_description))
 
-        package_info = Package(PackageName=PackageName(data_list[0]), PackageVersion=PackageVersion(data_list[1]),
-                               PackageDate=PackageDate(data_list[2]), PackageDescription=PackageDescription(data_list[3]))
-
-        CreateData.create("json", data_file_path, logger, package_info)
-        CreateData.create("csv", data_file_path, logger, package_info)
-        CreateData.create("xml", data_file_path, logger, package_info)
-
-        logger.info("")
+        CreateData.convert(JSON, output_file_path, logger, package_info)
+        CreateData.convert(CSV, output_file_path, logger, package_info)
+        CreateData.convert(XML, output_file_path, logger, package_info)
 
 
 if __name__ == "__main__":
