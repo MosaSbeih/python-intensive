@@ -5,8 +5,8 @@ import requests
 
 
 from bs4 import BeautifulSoup
-from package import Package, PackageName, PackageVersion, PackageDate, PackageDescription
-from DataProcess import CreateData, JSON, CSV, XML
+from package import Package
+from DataProcess import PackageConverter, JSONConverter, CSVConverter, XMLConverter
 
 
 ABS_PATH = os.path.abspath("").replace("src", "")
@@ -74,14 +74,14 @@ def main() -> None:
 
         logger.info("Parsing data for package <" + package_name + ">")
 
-        package_info = Package(PackageName=PackageName(package_name),
-                               PackageVersion=PackageVersion(package_version),
-                               PackageDate=PackageDate(package_date),
-                               PackageDescription=PackageDescription(package_description))
+        package_info = Package(name=package_name,
+                               version=package_version,
+                               date=package_date,
+                               description=package_description)
 
-        CreateData.convert(JSON, output_file_path, logger, package_info)
-        CreateData.convert(CSV, output_file_path, logger, package_info)
-        CreateData.convert(XML, output_file_path, logger, package_info)
+        PackageConverter.convert(JSONConverter, output_file_path, logger, package_info)
+        PackageConverter.convert(CSVConverter, output_file_path, logger, package_info)
+        PackageConverter.convert(XMLConverter, output_file_path, logger, package_info)
 
 
 if __name__ == "__main__":
